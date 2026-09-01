@@ -92,8 +92,11 @@ def get_flash_attn_version(
         if device_capability.major == 9 and is_fa_version_supported(3):
             # Hopper (SM90): prefer FA3
             fa_version = 3
-        elif device_capability.major == 10 and is_fa_version_supported(4):
-            # Blackwell (SM100+, restrict to SM100 for now): prefer FA4
+        elif device_capability.major in (10, 11) and is_fa_version_supported(4):
+            # Blackwell (SM100/SM110): prefer FA4. _is_fa4_supported() already
+            # lists is_device_capability_family(110), so gating selection on
+            # major == 10 contradicted the support check and silently fell back
+            # to FA2 on sm_110.
             fa_version = 4
         else:
             # Fallback to FA2
